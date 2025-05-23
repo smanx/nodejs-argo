@@ -9,7 +9,7 @@ const { promisify } = require('util');
 const exec = promisify(require('child_process').exec);
 const { execSync } = require('child_process');        // 只填写UPLOAD_URL将上传节点,同时填写UPLOAD_URL和PROJECT_URL将上传订阅
 const UPLOAD_URL = process.env.UPLOAD_URL || 'https://merge.smanx.dpdns.org';      // 节点或订阅自动上传地址,需填写部署Merge-sub项目后的首页地址,例如：https://merge.serv00.net
-const PROJECT_URL = process.env.PROJECT_URL || 'https://idx-3000.smanx.dpdns.org';    // 需要上传订阅或保活时需填写项目分配的url,例如：https://google.com
+const PROJECT_URL = process.env.PROJECT_URL || '';    // 需要上传订阅或保活时需填写项目分配的url,例如：https://google.com
 const AUTO_ACCESS = process.env.AUTO_ACCESS || false; // false关闭自动保活，true开启,需同时填写PROJECT_URL变量
 const FILE_PATH = process.env.FILE_PATH || './tmp';   // 运行目录,sub节点文件保存目录
 const SUB_PATH = process.env.SUB_PATH || 'sub';       // 订阅路径
@@ -23,7 +23,7 @@ const ARGO_AUTH = process.env.ARGO_AUTH || '';              // 固定隧道密�
 const ARGO_PORT = process.env.ARGO_PORT || 8001;            // 固定隧道端口,使用token需在cloudflare后台设置和这里一致
 const CFIP = process.env.CFIP || '104.16.0.0';         // 节点优选域名或优选ip  
 const CFPORT = process.env.CFPORT || 443;       // 节点优选域名或优选ip对应的端口
-const NAME = process.env.NAME || 'echohost';                     // 节点名称
+const NAME = process.env.NAME || 'argo';                     // 节点名称
 
 if (!fs.existsSync('uuid.txt')) {
     fs.writeFileSync('uuid.txt', UUID);
