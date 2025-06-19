@@ -26,10 +26,10 @@ const CFPORT = process.env.CFPORT || 443;       // 节点优选域名或优选ip
 const NAME = process.env.NAME || 'argo';                     // 节点名称
 
 if (!fs.existsSync('uuid.txt')) {
-    fs.writeFileSync('uuid.txt', UUID);
-  } else {
-    UUID = fs.readFileSync('uuid.txt', 'utf8');
-  }
+  fs.writeFileSync('uuid.txt', UUID);
+} else {
+  UUID = fs.readFileSync('uuid.txt', 'utf8');
+}
 
 //创建运行文件夹
 if (!fs.existsSync(FILE_PATH)) {
@@ -62,17 +62,17 @@ function deleteNodes() {
     }
 
     const decoded = Buffer.from(fileContent, 'base64').toString('utf-8');
-    const nodes = decoded.split('\n').filter(line => 
+    const nodes = decoded.split('\n').filter(line =>
       /(vless|vmess|trojan|hysteria2|tuic):\/\//.test(line)
     );
 
     if (nodes.length === 0) return;
 
-    return axios.post(`${UPLOAD_URL}/api/delete-nodes`, 
+    return axios.post(`${UPLOAD_URL}/api/delete-nodes`,
       JSON.stringify({ nodes }),
       { headers: { 'Content-Type': 'application/json' } }
-    ).catch((error) => { 
-      return null; 
+    ).catch((error) => {
+      return null;
     });
   } catch (err) {
     return null;
@@ -84,16 +84,16 @@ function cleanupOldFiles() {
   const pathsToDelete = ['web', 'bot', 'npm', 'php', 'sub.txt', 'boot.log'];
   pathsToDelete.forEach(file => {
     const filePath = path.join(FILE_PATH, file);
-    fs.unlink(filePath, () => {});
+    fs.unlink(filePath, () => { });
   });
 }
 
 // 根路由
-app.get("/", function(req, res) {
-    // 设置允许所有域名跨域访问
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+app.get("/", function (req, res) {
+  // 设置允许所有域名跨域访问
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   res.send("Hello world!");
 });
 
@@ -108,7 +108,7 @@ const config = {
     { port: 3004, listen: "127.0.0.1", protocol: "trojan", settings: { clients: [{ password: UUID }] }, streamSettings: { network: "ws", security: "none", wsSettings: { path: "/trojan-argo" } }, sniffing: { enabled: true, destOverride: ["http", "tls", "quic"], metadataOnly: false } },
   ],
   dns: { servers: ["https+local://8.8.8.8/dns-query"] },
-  outbounds: [ { protocol: "freedom", tag: "direct" }, {protocol: "blackhole", tag: "block"} ]
+  outbounds: [{ protocol: "freedom", tag: "direct" }, { protocol: "blackhole", tag: "block" }]
 };
 fs.writeFileSync(path.join(FILE_PATH, 'config.json'), JSON.stringify(config, null, 2));
 
@@ -230,9 +230,9 @@ tls: ${nezhatls}
 use_gitee_to_upgrade: false
 use_ipv6_country_code: false
 uuid: ${UUID}`;
-      
+
       fs.writeFileSync(path.join(FILE_PATH, 'config.yaml'), configYaml);
-      
+
       // 运行 php
       const command = `nohup ${FILE_PATH}/php -c "${FILE_PATH}/config.yaml" >/dev/null 2>&1 &`;
       try {
@@ -311,19 +311,19 @@ function getFilesForArchitecture(architecture) {
 
   if (NEZHA_SERVER && NEZHA_KEY) {
     if (NEZHA_PORT) {
-      const npmUrl = architecture === 'arm' 
+      const npmUrl = architecture === 'arm'
         ? "https://arm64.ssss.nyc.mn/agent"
         : "https://amd64.ssss.nyc.mn/agent";
-        baseFiles.unshift({ 
-          fileName: "npm", 
-          fileUrl: npmUrl 
-        });
+      baseFiles.unshift({
+        fileName: "npm",
+        fileUrl: npmUrl
+      });
     } else {
-      const phpUrl = architecture === 'arm' 
-        ? "https://arm64.ssss.nyc.mn/v1" 
+      const phpUrl = architecture === 'arm'
+        ? "https://arm64.ssss.nyc.mn/v1"
         : "https://amd64.ssss.nyc.mn/v1";
-      baseFiles.unshift({ 
-        fileName: "php", 
+      baseFiles.unshift({
+        fileName: "php",
         fileUrl: phpUrl
       });
     }
@@ -457,57 +457,57 @@ async function uplodNodes() {
       subscription: [subscriptionUrl]
     };
     try {
-        const response = await axios.post(`${UPLOAD_URL}/api/add-subscriptions`, jsonData, {
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        
-        if (response.status === 200) {
-            console.log('Subscription uploaded successfully');
-        } else {
-          return null;
-          //  console.log('Unknown response status');
+      const response = await axios.post(`${UPLOAD_URL}/api/add-subscriptions`, jsonData, {
+        headers: {
+          'Content-Type': 'application/json'
         }
+      });
+
+      if (response.status === 200) {
+        console.log('Subscription uploaded successfully');
+      } else {
+        return null;
+        //  console.log('Unknown response status');
+      }
     } catch (error) {
-        if (error.response) {
-            if (error.response.status === 400) {
-              //  console.error('Subscription already exists');
-            }
+      if (error.response) {
+        if (error.response.status === 400) {
+          //  console.error('Subscription already exists');
         }
+      }
     }
   } else if (UPLOAD_URL) {
-      if (!fs.existsSync(listPath)) return;
-      const content = fs.readFileSync(listPath, 'utf-8');
-      const nodes = content.split('\n').filter(line => /(vless|vmess|trojan|hysteria2|tuic):\/\//.test(line));
+    if (!fs.existsSync(listPath)) return;
+    const content = fs.readFileSync(listPath, 'utf-8');
+    const nodes = content.split('\n').filter(line => /(vless|vmess|trojan|hysteria2|tuic):\/\//.test(line));
 
-      if (nodes.length === 0) return;
+    if (nodes.length === 0) return;
 
-      const jsonData = JSON.stringify({ nodes });
+    const jsonData = JSON.stringify({ nodes });
 
-      try {
-          await axios.post(`${UPLOAD_URL}/api/add-nodes`, jsonData, {
-              headers: { 'Content-Type': 'application/json' }
-          });
-          if (response.status === 200) {
-            console.log('Subscription uploaded successfully');
-        } else {
-            return null;
-        }
-      } catch (error) {
-          return null;
+    try {
+      await axios.post(`${UPLOAD_URL}/api/add-nodes`, jsonData, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      if (response.status === 200) {
+        console.log('Subscription uploaded successfully');
+      } else {
+        return null;
       }
+    } catch (error) {
+      return null;
+    }
   } else {
-      // console.log('Skipping upload nodes');
-      return;
+    // console.log('Skipping upload nodes');
+    return;
   }
 }
 
 // 90s后删除相关文件
 function cleanFiles() {
   setTimeout(() => {
-    const filesToDelete = [bootLogPath, configPath, webPath, botPath, phpPath, npmPath];  
-    
+    const filesToDelete = [bootLogPath, configPath, webPath, botPath, phpPath, npmPath];
+
     if (NEZHA_PORT) {
       filesToDelete.push(npmPath);
     } else if (NEZHA_SERVER && NEZHA_KEY) {
@@ -542,6 +542,15 @@ async function AddVisitTask() {
     console.log(`automatic access task added successfully`);
   } catch (error) {
     console.error(`添加URL失败: ${error.message}`);
+  }
+}
+
+async function execCommand(command) {
+  try {
+    await exec(command);
+    console.log('command is running', command);
+  } catch (error) {
+    console.error(`command running error: ${error}`);
   }
 }
 
